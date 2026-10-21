@@ -1,0 +1,79 @@
+# JetArm pulse -> joint-angle calibration
+# Verified against Hiwonder's compiled FK on the Jetson (2026-10-20).
+#
+# Chain: pulse -> DH angle (Hiwonder kinematics/transform.py)
+#        -> URDF joint angle (affine, below)
+#
+# Pulse 0..1000 maps to the servo range; the real controller clamps to the
+# mechanical FK limits, which are narrower for joint2 and joint4.
+
+pulse_range: [0, 1000]
+joint_order: [joint1, joint2, joint3, joint4, joint5]
+gripper_servo_id: 10
+
+# pulse p -> DH angle (degrees):
+#   angle = (p - 500)/1000 * (angle_max - angle_min) + angle_mid
+dh_maps:
+  joint1: {min: -120, max: 120, mid: 0}
+  joint2: {min: 30, max: -210, mid: -90}
+  joint3: {min: 120, max: -120, mid: 0}
+  joint4: {min: 30, max: -210, mid: -90}
+  joint5: {min: -120, max: 120, mid: 0}
+
+# DH -> URDF (radians). This is the mapping used in sim/tools/pulse_map.py.
+dh_to_urdf:
+  joint1: {sign: +1, offset_deg: 0}
+  joint2: {sign: -1, offset_deg: -90}
+  joint3: {sign: -1, offset_deg: 0}
+  joint4: {sign: -1, offset_deg: -90}
+  joint5: {sign: +1, offset_deg: 0}
+
+# URDF joint limits (radians), symmetric, derived from the real mechanical
+# limits through the mapping above. Applied by postprocess_urdf.py.
+urdf_limits_rad:
+  joint1: [-2.0979, 2.0979]   # +-120.2 deg
+  joint2: [-1.5743, 1.5743]   # +-90.2 deg  (mechanical; servo can go further)
+  joint3: [-2.0979, 2.0979]   # +-120.2 deg
+  joint4: [-1.9234, 1.9234]   # +-110.2 deg (mechanical)
+  joint5: [-2.0979, 2.0979]   # +-120.2 deg
+
+# Pulse intervals that keep the real FK inside its mechanical limits.
+# Use these bounds when generating sim demonstrations.
+safe_pulse_bounds:
+  joint1: [0, 1000]
+  joint2: [125, 875]
+  joint3: [0, 1000]
+  joint4: [41, 959]
+  joint5: [0, 1000]
+
+# Fixed transform from the official URDF `endpoint` frame to the real FK
+# end-effector frame. Added as link/joint `tcp` by postprocess_urdf.py.
+tcp:
+  parent: endpoint
+  child: tcp
+  xyz: [0.0, 0.0, -0.00354416798]
+  rpy: [0.0, -1.57079632679, 0.0]
+
+# Verification (sim/tools/fk_check.py, 300 random pulse poses):
+verification:
+  tip: tcp
+  position_error_m: {mean: 5.8e-17, max: 1.7e-16}
+  orientation_error_deg: {mean: 1.1e-07, max: ~3.8e-07}
+  report: sim/calibration/fk_report.json
+
+# NOT yet calibrated:
+gripper:
+  joint: r_joint
+  pulse_range: [0, 1000]
+  urdf_angle_range_rad: [0.0, 1.57079632679]
+  # TODO: determine direction/limits on the real robot. Init pulse is 700.
+  # Typical Hiwonder app: A closes, Y opens. Verify before trusting the sign.
+  pulse_to_angle: null
+
+dynamics:
+  status: uncalibrated
+  note: >
+    The official URDF inertials are placeholders (base mass 0.1 kg, finger mass
+    1e-5 kg, inertia 1.0). Replace with measured/CAD values before trusting
+    contact dynamics; for position-controlled pick-place, approximate values
+    plus domain randomization are usually sufficient. See dynamics.yaml.

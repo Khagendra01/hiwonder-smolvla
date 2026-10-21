@@ -32,3 +32,6 @@ logs/
 # --- os / editor ---
 .DS_Store
 *.swp
+
+# --- Hiwonder vendor assets (fetched by sim/scripts/fetch_assets.sh) ---
+sim/assets/jetarm_6dof_description/

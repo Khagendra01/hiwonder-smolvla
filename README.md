@@ -10,7 +10,9 @@ on a **Hiwonder JetArm**, then run it closed-loop on the robot.
 
 > Status: the full pipeline is wired and smoke-tested end-to-end (recorder →
 > upload → fine-tune → checkpoint → HTTP inference → dry-run rollout). Real
-> demonstration data, real training, and live rollout are pending.
+> demonstration data, real training, and live rollout are pending. A simulation
+> scaffold lives in [`sim/`](sim/README.md): its kinematics are calibrated
+> against the real FK; dynamics, camera and the Isaac environment are pending.
 
 ---
 
@@ -99,6 +101,7 @@ config/       robot.env (ports/topics/joints), joints.yaml
 bridge/       host-native ROS 2 + gamepad + camera + dataset recorder + rollout
 modal/        train_smolvla.py (data conversion + fine-tune), serve_smolvla.py
 scripts/      record.sh, train.sh, rollout.sh, env.sh, fetch_model.sh, utilities
+sim/          Isaac URDF/tools/calibration (data engine; see sim/README.md)
 docs/         architecture, Modal, DOFBOT, troubleshooting
 datasets/     recordings (git-ignored)
 models/       downloaded checkpoints (git-ignored)
@@ -112,6 +115,23 @@ not part of the current path.
 
 ---
 
+## Simulation (Isaac)
+
+`sim/` turns the JetArm into an Isaac data engine: generate pick-place
+demonstrations, pretrain SmolVLA, then fine-tune on a small real dataset.
+
+- The official Hiwonder URDF is fetched by `sim/scripts/fetch_assets.sh`
+  (not committed) and converted to a sim-ready URDF.
+- Kinematics are **verified against the real controller FK**: pulse → DH → URDF,
+  plus a calibrated `tcp` frame (max error ~1e-16 m over 300 poses).
+- The real recordings are **not needed** on the Isaac machine; sim episodes are
+  exported in the recorder format and uploaded to the Modal volume.
+- Isaac Sim/Lab needs an x86_64 RTX machine (the Orin cannot run it).
+
+Full setup, calibration status and data flow: [`sim/README.md`](sim/README.md).
+
+---
+
 ## Docs
 
 - [docs/architecture.md](docs/architecture.md) — control path, topics, dataset
@@ -122,6 +142,8 @@ not part of the current path.
   implement.
 - [docs/troubleshooting.md](docs/troubleshooting.md) — serial/`button_scan`,
   camera, zsh/ROS env, stray nodes, hung `systemctl`, gamepad.
+- [sim/README.md](sim/README.md) — Isaac setup, URDF/FK calibration, sim data
+  flow, what is still uncalibrated.
 
 ---
 

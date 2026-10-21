@@ -1,0 +1,45 @@
+# JetArm dynamics / actuator parameters.
+#
+# STATUS: ESTIMATES. The official URDF uses placeholder inertials. Measure the
+# links with a scale (and ideally CAD) before trusting contact-rich results.
+# For slow position-controlled pick-place, approximate masses + randomization
+# are usually enough; do not spend weeks on SysID before the first rollout.
+
+links:
+  # mass_kg / com_m / inertia_kg_m2 are ESTIMATES; replace with measurements.
+  base_link: {mass_kg: 0.60, com_m: [0.0, 0.0, 0.03], inertia_kg_m2: [0.0010, 0.0010, 0.0010]}
+  link1:     {mass_kg: 0.35, com_m: [0.0, 0.06, 0.0], inertia_kg_m2: [0.0006, 0.0003, 0.0006]}
+  link2:     {mass_kg: 0.35, com_m: [0.0, 0.06, 0.0], inertia_kg_m2: [0.0006, 0.0003, 0.0006]}
+  link3:     {mass_kg: 0.25, com_m: [0.0, 0.03, 0.0], inertia_kg_m2: [0.0003, 0.0002, 0.0003]}
+  link4:     {mass_kg: 0.20, com_m: [0.0, 0.03, 0.0], inertia_kg_m2: [0.0002, 0.0001, 0.0002]}
+  link5:     {mass_kg: 0.10, com_m: [0.0, 0.0, 0.03], inertia_kg_m2: [0.0001, 0.0001, 0.0001]}
+  gripper:   {mass_kg: 0.08, com_m: [0.0, 0.0, 0.05], inertia_kg_m2: [0.00005, 0.00005, 0.00005]}
+
+joints:
+  # URDF names; values from the official description are placeholders.
+  # Verify with a torque/speed test or the servo datasheet.
+  effort_nm: 6.0
+  velocity_rad_s: 0.524       # 30 deg/s as written in the official URDF
+  damping: 0.05
+  friction: 0.02
+  armature: 0.005
+
+servo:
+  # Hiwonder serial bus servos; fill in the exact model from the datasheet.
+  model: unknown
+  control_mode: position
+  command_latency_s: 0.02     # estimate; measure a step response
+  interpolation: true         # /servo_controller accepts a duration parameter
+
+gripper:
+  open_pulse: null            # measure
+  close_pulse: null           # measure
+  max_opening_m: null         # measure (finger gap)
+  grasp_force_n: null         # datasheet / measure
+
+# How to improve this file:
+# 1. Weigh each link (remove it or weigh the assembly differences).
+# 2. Measure link lengths/TCP with calipers; update URDF + joint_map.yaml.
+# 3. Record a step response on the real robot (command 500 -> 600, log
+#    /controller_manager/servo_states at 50-100 Hz) and fit latency/damping.
+# 4. Measure gripper opening vs pulse and grasp force.

@@ -1,0 +1,47 @@
+# Orbbec Gemini RGB camera calibration (UVC /dev/video0).
+#
+# STATUS: not calibrated. Fill this from a checkerboard calibration on the real
+# robot, then use the same intrinsics/extrinsics in Isaac.
+#
+# Suggested target: 8x6 inner corners, 11 mm squares (matches the Hiwonder
+# factory helper). Record at the resolution used for training (320x240) or
+# calibrate at 640x480 and scale the intrinsics.
+
+device: /dev/video0
+capture_resolution: [640, 480]
+training_resolution: [320, 240]
+
+intrinsics:
+  fx: null
+  fy: null
+  cx: null
+  cy: null
+  distortion_model: plumb_bob
+  k1: null
+  k2: null
+  p1: null
+  p2: null
+  k3: null
+
+# Camera pose in the arm base frame (base_link), meters and radians.
+# Measure the mount or solve with a marker; this is the largest sim-to-real
+# factor for a vision policy.
+extrinsics:
+  parent: base_link
+  child: camera_optical_frame
+  xyz: [null, null, null]
+  rpy: [null, null, null]
+  # Optical frame convention: +z forward, +x right, +y down.
+
+# Capture settings that affect appearance:
+settings:
+  format: MJPG
+  fps: 30
+  exposure: auto
+  white_balance: auto
+  noise: unknown
+
+# How to calibrate:
+#   python3 sim/tools/calibrate_camera.py --cols 8 --rows 6 --square 0.011
+# or use ROS 2 camera_calibration with the same target, then copy K/D here.
+# Verify by rendering a checkerboard in Isaac at the same pose and comparing.
