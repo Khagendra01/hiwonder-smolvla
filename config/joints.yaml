@@ -1,0 +1,12 @@
+# Joint / servo mapping for the Hiwonder JetArm (from
+# ros2_ws/src/driver/servo_controller/config/servo_controller.yaml).
+# pulse: 0..1000, 1000 ticks per 240 degrees.
+joints:
+  - { name: joint1,  servo_id: 1,  init: 500, min: 0, max: 1000 }
+  - { name: joint2,  servo_id: 2,  init: 500, min: 0, max: 1000 }
+  - { name: joint3,  servo_id: 3,  init: 500, min: 0, max: 1000 }
+  - { name: joint4,  servo_id: 4,  init: 500, min: 0, max: 1000 }
+  - { name: joint5,  servo_id: 5,  init: 500, min: 0, max: 1000 }
+  - { name: gripper, servo_id: 10, init: 700, min: 0, max: 1000 }
+# Action vector order used by the LeRobot bridge (6 values, absolute pulses):
+action_order: [joint1, joint2, joint3, joint4, joint5, gripper]

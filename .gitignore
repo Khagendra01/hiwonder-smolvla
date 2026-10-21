@@ -1,0 +1,34 @@
+# --- secrets / local-only ---
+.env
+config/local.env
+.modal.toml
+**/.modal.toml
+
+# --- python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# --- local data / artifacts (stay on the Jetson or in the Modal volume) ---
+datasets/*
+!datasets/.gitkeep
+models/*
+!models/.gitkeep
+outputs/*
+!outputs/.gitkeep
+logs/
+*.log
+
+# --- model weights (download with scripts/fetch_model.sh; prefer Releases/LFS) ---
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# --- os / editor ---
+.DS_Store
+*.swp
