@@ -157,12 +157,11 @@ Full setup, calibration status and data flow: [`sim/README.md`](sim/README.md).
 - Clear the workspace and start near the pose used in the demonstrations.
 - Only one process may own the arm serial port: record/rollout stop
   `button_scan.service` and restore it on exit.
-- **Primary teleop is `bridge/joy_dofbot.py`** (DOFBOT-style: sticks = arm,
-  D-pad = chassis) via `bash scripts/gamepad.sh`. Hiwonder's `joystick_control`
-  (sticks = tank) is kept as a fallback; run only one at a time.
-- This mapping is the **shared standard**: DOFBOT adapters follow the same
-  stick/button semantics (`docs/dofbot.md`), so one operator can switch robots
-  without relearning the pad.
+- **Default teleop is Hiwonder's `joystick_control`** (sticks = tank chassis,
+  buttons/D-pad = arm joints); it starts with the arm stack.
+- `config/gamepad.yaml` + `bridge/joy_dofbot.py` hold the shared DOFBOT-style
+  mapping (sticks = arm, D-pad = chassis) for DOFBOT to apply later. Run only
+  one teleop at a time.
 - The endpoint/arm have no obstacle awareness. Rollouts are supervised.
 
 ---

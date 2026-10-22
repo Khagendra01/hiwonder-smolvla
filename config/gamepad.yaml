@@ -1,7 +1,7 @@
-# CANONICAL / SHARED gamepad mapping for this repo: JetArm implements it here,
-# DOFBOT adapters reproduce the same stick/button layout (swap only the output).
-# DOFBOT-style mapping for the SHANWAN "Android Gamepad" (/dev/input/js0).
-# Used by bridge/joy_dofbot.py. Verify the raw axis/button numbers first:
+# SHARED DOFBOT-style gamepad mapping, kept in the repo for DOFBOT to apply.
+# JetArm's default control remains Hiwonder's joystick_control.
+# For the SHANWAN "Android Gamepad" (/dev/input/js0), used by
+# bridge/joy_dofbot.py. Verify the raw axis/button numbers first:
 #
 #   python3 bridge/gamepad.py --monitor
 #

@@ -4,11 +4,11 @@ Short answer: **the training and serving stack is reusable as-is; the robot I/O
 layers are not.** Keep one repo, one Modal volume, and one endpoint, with a
 separate run name and checkpoint per robot/task.
 
-## Shared gamepad mapping (canonical)
+## Gamepad mapping to apply on DOFBOT
 
-The operator mapping is defined once for both robots: `config/gamepad.yaml`
-consumed by `bridge/joy_dofbot.py`. DOFBOT adapters must reproduce the **same
-feel** (not the same topics):
+JetArm's default remains Hiwonder's `joystick_control` (sticks = chassis). For
+DOFBOT, apply the DOFBOT-style layout stored in `config/gamepad.yaml` and
+consumed by `bridge/joy_dofbot.py` (arm-only robot, so sticks = arm):
 
 | Input | Action |
 |---|---|
@@ -22,7 +22,7 @@ feel** (not the same topics):
 
 The JetArm node translates these events into ROS 2 topics. A DOFBOT adapter
 should read the same pad axes/buttons and translate them into DOFBOT SDK
-commands, so one operator can switch robots without relearning the pad.
+commands, so the stored layout is reusable on the arm-only robot.
 
 ## What is shared
 
@@ -35,7 +35,7 @@ commands, so one operator can switch robots without relearning the pad.
 | `bridge/rollout_smolvla.py` | no (adapt) | ROS 2 topics and pulse clamps are JetArm-specific |
 | `scripts/record.sh` / `rollout.sh` | no (adapt) | Hiwonder launch/serial/`button_scan` logic |
 | `config/robot.env` | no (new) | DOFBOT SDK/port/units |
-| `config/gamepad.yaml` | yes (layout) | canonical stick/button mapping; swap only the output adapter |
+| `config/gamepad.yaml` | yes (layout) | DOFBOT applies this layout; JetArm's default stays Hiwonder |
 
 The important interface is the **dataset contract**, not ROS 2.
 
@@ -72,7 +72,7 @@ from the data, so degrees and pulses both train; mixing units does not.
    - `ModalPolicyClient.infer({"image":..., "state":..., "task":...})`,
    - clamp to the robot's joint limits and per-step delta,
    - send absolute targets through the DOFBOT SDK.
-3. **Teleop**: reproduce the shared mapping above (analog sticks = arm,
+3. **Teleop**: reproduce the DOFBOT-style mapping above (analog sticks = arm,
    D-pad = chassis) with the DOFBOT SDK; the recorder only observes.
 
 No ROS 2 or `rclpy` is required if the DOFBOT is driven by its Python SDK.

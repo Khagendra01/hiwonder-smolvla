@@ -8,7 +8,7 @@
 | Robot | Hiwonder JetArm Advanced: 5-DOF arm + gripper + tank chassis |
 | ROS | ROS 2 Humble in `~/ros2_ws`, `ROS_DOMAIN_ID=31`, `rmw_fastrtps_cpp` |
 | Arm board | STM32 `ros_robot_controller` on `/dev/ttyUSB0` @ 1 Mbps (CH340) |
-| Camera | Orbbec Gemini RGB as UVC `/dev/video0` (depth/IR interface currently broken) |
+| Camera | Orbbec Astra color sensor as UVC `/dev/video0` (depth/IR interface currently broken) |
 | Input | SHANWAN gamepad `/dev/input/js0` via Hiwonder `joystick_control` |
 
 All host-side code talks to the **existing Hiwonder ROS 2 stack**. No LeRobot or
@@ -50,15 +50,16 @@ then restore it on exit. If the arm stack fails to start, check for duplicate
 `CameraReader` (in `bridge/record_smolvla.py`) opens `/dev/video0` with
 `cv2.CAP_V4L2`, requests MJPG at 640×480, keeps only the newest frame in a
 background thread. Recording downscales to 320×240 JPEG q85. The depth/IR half of
-the Gemini enumerates but fails (`error -71`); RGB is unaffected.
+the Astra depth/IR interface enumerates but fails (`error -71`); RGB is unaffected.
 
 ## Gamepad
 
-The **primary / shared** operator mapping is `bridge/joy_dofbot.py`
-(DOFBOT-style, below). Hiwonder's `joystick_control` is kept as a fallback. Only
-one of the two may run, because both command `/servo_controller`.
+The **default** operator mapping is Hiwonder's `joystick_control` (below).
+`bridge/joy_dofbot.py` provides an alternative DOFBOT-style mapping kept in the
+repo for DOFBOT; only one of the two may run, because both command
+`/servo_controller`.
 
-### Hiwonder mapping (fallback)
+### Default: Hiwonder mapping
 
 Hiwonder's `joystick_control` owns the pad:
 
@@ -69,11 +70,11 @@ Hiwonder's `joystick_control` owns the pad:
   **start/stop** and **discard**.
 - Hiwonder sends init pose `[500,560,130,115,500,200]` when it starts.
 
-### Primary: DOFBOT-style (`bridge/joy_dofbot.py`)
+### Alternative / DOFBOT: DOFBOT-style (`bridge/joy_dofbot.py`)
 
-This is the canonical mapping for the shared repo; DOFBOT adapters reproduce it
-(see [dofbot.md](dofbot.md)). For a DOFBOT-like feel (analog sticks on the arm),
-run this instead of Hiwonder's node:
+This mapping is kept in the repo so a DOFBOT adapter can apply the same layout
+later (see [dofbot.md](dofbot.md)). For a DOFBOT-like feel (analog sticks on the
+arm), run this instead of Hiwonder's node:
 
 | Input | Action |
 |---|---|
