@@ -71,11 +71,13 @@ rpy = (0, -90°, 0)
 
 ## Isaac setup on the RTX machine
 
-The Orin cannot run Isaac Sim. Use the RTX box (24 GB is comfortable for one arm
-+ camera; start at 640×480, one environment).
+The Orin cannot run Isaac Sim. Target machine: **RTX 5090, 32 GB VRAM, x86_64**.
+That is comfortable for one arm + camera at 640×480; start with one environment,
+then raise the count if VRAM allows.
 
 1. **OS/driver.** Ubuntu 22.04/24.04, recent NVIDIA driver with **RTX 50-series
-   (Blackwell)** support (570+), CUDA 12.8+. Verify `nvidia-smi`.
+   (Blackwell)** support (570+), CUDA 12.8+. Verify `nvidia-smi` shows the 5090
+   and 32 GB VRAM.
 2. **Docker + NVIDIA Container Toolkit.**
    ```bash
    sudo apt install -y docker.io

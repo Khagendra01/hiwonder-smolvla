@@ -325,7 +325,14 @@ The real controller sends `ServosPosition` with `position_unit="pulse"` and a
 `duration`; it interpolates. Sim should use a position drive at the same 20 Hz
 and a comparable speed/latency, otherwise the action timing will not match.
 
-## 9. What Isaac produces
+## 9. Isaac host and what it produces
+
+Target host: **RTX 5090, 32 GB VRAM, x86_64**. One JetArm + a 640×480 RGB camera
+uses a small fraction of that; the headroom is for more parallel environments,
+higher-resolution cameras, or rendering quality during domain randomization.
+Start with one env, then scale. The Orin cannot run Isaac Sim.
+
+
 
 Use the **same on-disk format as the real recorder**, so the existing Modal
 converter works unchanged:

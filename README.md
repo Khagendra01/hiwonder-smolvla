@@ -126,7 +126,8 @@ demonstrations, pretrain SmolVLA, then fine-tune on a small real dataset.
   plus a calibrated `tcp` frame (max error ~1e-16 m over 300 poses).
 - The real recordings are **not needed** on the Isaac machine; sim episodes are
   exported in the recorder format and uploaded to the Modal volume.
-- Isaac Sim/Lab needs an x86_64 RTX machine (the Orin cannot run it).
+- Isaac Sim/Lab needs an x86_64 RTX machine: **RTX 5090, 32 GB VRAM** (the Orin
+  cannot run it).
 
 Full setup, calibration status and data flow: [`sim/README.md`](sim/README.md).
 
