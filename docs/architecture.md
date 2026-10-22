@@ -52,7 +52,13 @@ then restore it on exit. If the arm stack fails to start, check for duplicate
 background thread. Recording downscales to 320×240 JPEG q85. The depth/IR half of
 the Gemini enumerates but fails (`error -71`); RGB is unaffected.
 
-## Gamepad (Hiwonder mapping)
+## Gamepad
+
+The **primary / shared** operator mapping is `bridge/joy_dofbot.py`
+(DOFBOT-style, below). Hiwonder's `joystick_control` is kept as a fallback. Only
+one of the two may run, because both command `/servo_controller`.
+
+### Hiwonder mapping (fallback)
 
 Hiwonder's `joystick_control` owns the pad:
 
@@ -62,6 +68,27 @@ Hiwonder's `joystick_control` owns the pad:
 - **L3/R3 are no-ops** in Hiwonder's node, so the recorder reuses them for
   **start/stop** and **discard**.
 - Hiwonder sends init pose `[500,560,130,115,500,200]` when it starts.
+
+### Primary: DOFBOT-style (`bridge/joy_dofbot.py`)
+
+This is the canonical mapping for the shared repo; DOFBOT adapters reproduce it
+(see [dofbot.md](dofbot.md)). For a DOFBOT-like feel (analog sticks on the arm),
+run this instead of Hiwonder's node:
+
+| Input | Action |
+|---|---|
+| Left stick | joint1 (horizontal) / joint2 (vertical) |
+| Right stick | joint4 (horizontal) / joint3 (vertical) |
+| LB / RB | joint5 − / + |
+| A / Y (cross / triangle) | gripper close / open |
+| D-pad | tank chassis (forward/back + rotate) |
+| Start | home |
+| L3 / R3 | free for the recorder |
+
+Mapping, step size and direction signs live in `config/gamepad.yaml`; verify the
+pad's raw axis/button numbers with `python3 bridge/gamepad.py --monitor`, then
+run `bash scripts/gamepad.sh` (or `--dry-run` first). Only one teleop node may
+command `/servo_controller`; `gamepad.sh` stops Hiwonder's node automatically.
 
 ## Recording format
 

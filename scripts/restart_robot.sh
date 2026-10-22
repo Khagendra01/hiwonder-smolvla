@@ -24,6 +24,7 @@ pkill -TERM -f "[c]ontroller_manager" 2>/dev/null || true
 pkill -TERM -f "[s]earch_kinematics_solutions" 2>/dev/null || true
 pkill -TERM -f "[c]heck_servo_connection" 2>/dev/null || true
 pkill -TERM -f "[j]oystick_control" 2>/dev/null || true
+pkill -TERM -f "[j]oy_dofbot" 2>/dev/null || true
 sleep 3
 pkill -KILL -f "[r]os_robot_controller" 2>/dev/null || true
 pkill -KILL -f "[b]ringup.launch" 2>/dev/null || true
@@ -50,4 +51,4 @@ sleep 2
 n_ctl=$(pgrep -fc "[r]os_robot_controller --ros-args" 2>/dev/null || echo 0)
 echo "ros_robot_controller processes: $n_ctl (expect 1)"
 sudo fuser -v "$RRC_PORT" 2>&1 | tail -3
-echo "OK. Gamepad: joystick_control (mode 0 = joint, mode 1 = Cartesian)."
+echo "OK. Gamepad: joystick_control (sticks = chassis) or bash scripts/gamepad.sh (sticks = arm)."

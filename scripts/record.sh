@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Record demonstrations in PASSIVE mode. Teleop = Hiwonder joystick_control
-# (your gamepad); video = /dev/video0 (Orbbec UVC color). The broken Orbbec
-# depth/IR node is NOT started. Nothing already running is touched.
+# Record demonstrations in PASSIVE mode. Teleop = your gamepad, either Hiwonder
+# joystick_control or bridge/joy_dofbot.py (DOFBOT-style); video = /dev/video0
+# (Orbbec UVC color). The broken Orbbec depth/IR node is NOT started. Nothing
+# already running is touched.
 #
 #   bash scripts/record.sh --task "pick up the red cube" --num-episodes 50
 #   bash scripts/record.sh --task "..." --out datasets/pick_red --fps 20
@@ -86,12 +87,16 @@ if ! stack_up; then
   sleep 2
 fi
 
-echo "== starting gamepad teleop (joystick_control) =="
-pkill -TERM -f "[j]oystick_control" 2>/dev/null || true
-sleep 1
-setsid ros2 launch peripherals joystick_control.launch.py > logs/joystick.log 2>&1 < /dev/null &
-STARTED_JOY=1
-sleep 3
+if pgrep -f "[j]oy_dofbot" >/dev/null 2>&1; then
+  echo "== gamepad teleop: joy_dofbot already running =="
+else
+  echo "== starting gamepad teleop (joystick_control) =="
+  pkill -TERM -f "[j]oystick_control" 2>/dev/null || true
+  sleep 1
+  setsid ros2 launch peripherals joystick_control.launch.py > logs/joystick.log 2>&1 < /dev/null &
+  STARTED_JOY=1
+  sleep 3
+fi
 
 echo "== recording: L3=start/stop, R3=discard (keyboard r/x/q) =="
 python3 "$PROJECT_ROOT/bridge/record_smolvla.py" "$@"

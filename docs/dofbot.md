@@ -4,6 +4,26 @@ Short answer: **the training and serving stack is reusable as-is; the robot I/O
 layers are not.** Keep one repo, one Modal volume, and one endpoint, with a
 separate run name and checkpoint per robot/task.
 
+## Shared gamepad mapping (canonical)
+
+The operator mapping is defined once for both robots: `config/gamepad.yaml`
+consumed by `bridge/joy_dofbot.py`. DOFBOT adapters must reproduce the **same
+feel** (not the same topics):
+
+| Input | Action |
+|---|---|
+| Left stick | joint1 (horizontal) / joint2 (vertical) |
+| Right stick | joint4 (horizontal) / joint3 (vertical) |
+| LB / RB | joint5 − / + |
+| A / Y (cross / triangle) | gripper close / open |
+| D-pad | chassis (forward/back + rotate) |
+| Start | home |
+| L3 / R3 | reserved for the recorder |
+
+The JetArm node translates these events into ROS 2 topics. A DOFBOT adapter
+should read the same pad axes/buttons and translate them into DOFBOT SDK
+commands, so one operator can switch robots without relearning the pad.
+
 ## What is shared
 
 | Component | Reusable? | Notes |
@@ -15,6 +35,7 @@ separate run name and checkpoint per robot/task.
 | `bridge/rollout_smolvla.py` | no (adapt) | ROS 2 topics and pulse clamps are JetArm-specific |
 | `scripts/record.sh` / `rollout.sh` | no (adapt) | Hiwonder launch/serial/`button_scan` logic |
 | `config/robot.env` | no (new) | DOFBOT SDK/port/units |
+| `config/gamepad.yaml` | yes (layout) | canonical stick/button mapping; swap only the output adapter |
 
 The important interface is the **dataset contract**, not ROS 2.
 
@@ -51,7 +72,8 @@ from the data, so degrees and pulses both train; mixing units does not.
    - `ModalPolicyClient.infer({"image":..., "state":..., "task":...})`,
    - clamp to the robot's joint limits and per-step delta,
    - send absolute targets through the DOFBOT SDK.
-3. **Teleop**: DOFBOT's own app/keyboard/gamepad; the recorder only observes.
+3. **Teleop**: reproduce the shared mapping above (analog sticks = arm,
+   D-pad = chassis) with the DOFBOT SDK; the recorder only observes.
 
 No ROS 2 or `rclpy` is required if the DOFBOT is driven by its Python SDK.
 

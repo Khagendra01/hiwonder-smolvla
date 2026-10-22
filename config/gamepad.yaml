@@ -1,0 +1,64 @@
+# CANONICAL / SHARED gamepad mapping for this repo: JetArm implements it here,
+# DOFBOT adapters reproduce the same stick/button layout (swap only the output).
+# DOFBOT-style mapping for the SHANWAN "Android Gamepad" (/dev/input/js0).
+# Used by bridge/joy_dofbot.py. Verify the raw axis/button numbers first:
+#
+#   python3 bridge/gamepad.py --monitor
+#
+# Then run it INSTEAD of Hiwonder's joystick_control (both command /servo_controller):
+#
+#   bash scripts/gamepad.sh
+#
+# Axis order observed on this pad (matches Hiwonder's joystick_control):
+#   0 = left stick vertical, 1 = left stick horizontal,
+#   2 = right stick vertical, 3 = right stick horizontal.
+# If a stick moves the wrong joint, change its axis index; if it moves the wrong
+# direction, flip `sign`.
+
+gamepad:
+  index: 0
+  deadzone: 0.15
+  rate_hz: 20
+
+joints:
+  names: [joint1, joint2, joint3, joint4, joint5, gripper]
+  ids: [1, 2, 3, 4, 5, 10]
+
+servo:
+  topic: /servo_controller
+  state_topic: /controller_manager/servo_states
+  min_pulse: 0
+  max_pulse: 1000
+  step: 8              # pulses per tick at full stick deflection (20 Hz -> 160/s)
+  duration: 0.05       # seconds per streamed command
+  home: [500, 500, 500, 500, 500, 700]
+
+# Analog sticks -> arm joints (DOFBOT-style: arm on both sticks).
+axes:
+  joint1: {axis: 1, sign: +1}   # left stick horizontal = base
+  joint2: {axis: 0, sign: +1}   # left stick vertical   = shoulder
+  joint3: {axis: 2, sign: +1}   # right stick vertical  = elbow
+  joint4: {axis: 3, sign: +1}   # right stick horizontal = wrist
+
+buttons:
+  step: 20             # pulses per press for joint5
+  gripper_step: 30     # pulses per press for the gripper
+  map:
+    joint5_minus: 6    # LB
+    joint5_plus: 7     # RB
+    gripper_close: 0   # A / cross
+    gripper_open: 4    # Y / triangle
+    home: 11           # start
+
+# Tank chassis on the D-pad (sticks are busy with the arm in this mapping).
+chassis:
+  enabled: true
+  topic: /chassis_controller/command
+  hat: 0
+  speed: 160           # translation magnitude (same units as Hiwonder, 0..160)
+  turn: 50             # angular rate (same units as Hiwonder, -50..50)
+  forward_sign: +1     # flip if D-pad up drives backwards
+  turn_sign: +1        # flip if D-pad left/right rotate the wrong way
+
+# Buttons the recorder uses for episode control; never bound above.
+reserved: [13, 14]     # L3 = start/stop, R3 = discard
