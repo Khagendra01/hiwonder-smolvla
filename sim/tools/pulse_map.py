@@ -59,6 +59,28 @@ def pulse_to_urdf_rad(pulse: list[float]) -> list[float]:
     return dh_to_urdf_rad(pulse_to_dh_rad(pulse))
 
 
+def dh_deg_to_pulse(dh_deg: list[float]) -> list[float]:
+    """Inverse of pulse_to_dh_deg (used when logging sim states as pulses)."""
+    out = []
+    for a, m in zip(dh_deg, JOINT_MAPS):
+        lo, hi, mid, a_lo, a_hi, a_mid = m
+        out.append((a - a_mid) / (a_hi - a_lo) * (hi - lo) + mid)
+    return out
+
+
+def dh_rad_to_pulse(dh_rad: list[float]) -> list[float]:
+    return dh_deg_to_pulse([math.degrees(a) for a in dh_rad])
+
+
+def urdf_to_dh_rad(urdf_rad: list[float]) -> list[float]:
+    """Inverse of dh_to_urdf_rad. The affine map is an involution."""
+    return dh_to_urdf_rad(urdf_rad)
+
+
+def urdf_to_pulse(urdf_rad: list[float]) -> list[float]:
+    return dh_rad_to_pulse(urdf_to_dh_rad(urdf_rad))
+
+
 def safe_pulse_bounds() -> list[tuple[int, int]]:
     """Pulse intervals that stay inside the real FK mechanical limits."""
     bounds = []
@@ -81,6 +103,8 @@ if __name__ == "__main__":
     args = ap.parse_args()
     dh = pulse_to_dh_rad(args.pulses)
     urdf = pulse_to_urdf_rad(args.pulses)
+    back = urdf_to_pulse(urdf)
     print("dh_rad  :", [round(v, 5) for v in dh])
     print("urdf_rad:", [round(v, 5) for v in urdf])
+    print("roundtrip pulses:", [round(v, 2) for v in back])
     print("safe pulse bounds:", safe_pulse_bounds())

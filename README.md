@@ -144,6 +144,8 @@ Full setup, calibration status and data flow: [`sim/README.md`](sim/README.md).
   camera, zsh/ROS env, stray nodes, hung `systemctl`, gamepad.
 - [sim/README.md](sim/README.md) — Isaac setup, URDF/FK calibration, sim data
   flow, what is still uncalibrated.
+- [breakdown.md](breakdown.md) — exact build/calibration log: vendor values,
+  formulas, files, sim episode format, and the SmolVLA training path.
 
 ---
 

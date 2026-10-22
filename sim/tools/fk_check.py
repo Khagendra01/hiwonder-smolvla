@@ -96,12 +96,13 @@ def main() -> int:
     report = {
         "samples": args.samples,
         "urdf": str(URDF.relative_to(ROOT)),
+        "tip": args.tip,
         "position_error_m": {
             "mean": float(pos_err.mean()),
             "max": float(pos_err.max()),
             "std": float(pos_err.std()),
         },
-        "error_in_urdf_endpoint_frame_m": {
+        "error_in_tip_frame_m": {
             "mean": err_local.mean(axis=0).tolist(),
             "std": err_local.std(axis=0).tolist(),
         },

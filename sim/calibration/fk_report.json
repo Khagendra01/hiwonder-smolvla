@@ -1,12 +1,13 @@
 {
   "samples": 300,
   "urdf": "sim/urdf/jetarm_6dof.urdf",
+  "tip": "tcp",
   "position_error_m": {
     "mean": 5.7785206094473e-17,
     "max": 1.7099129793129452e-16,
     "std": 3.0067772784825966e-17
   },
-  "error_in_urdf_endpoint_frame_m": {
+  "error_in_tip_frame_m": {
     "mean": [
       6.4960604998395836e-18,
       3.733774649732594e-18,
