@@ -4,7 +4,8 @@
 # robot, then use the same intrinsics/extrinsics in Isaac.
 #
 # Suggested target: 8x6 inner corners, 11 mm squares (matches the Hiwonder
-# factory helper). Record at the resolution used for training (320x240) or
+# factory helper). Printable: sim/calibration/checkerboard_8x6_11mm.pdf
+# (print at 100% / actual size; verify the 100 mm ruler). Record at the resolution used for training (320x240) or
 # calibrate at 640x480 and scale the intrinsics.
 
 device: /dev/video0
